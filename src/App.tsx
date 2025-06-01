@@ -14,15 +14,7 @@ import MyNotes from "./pages/MyNotes";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
-// Create query client with default options
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
