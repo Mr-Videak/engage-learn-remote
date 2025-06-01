@@ -9,62 +9,25 @@ import {
   DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, BookOpen, Settings, LogOut, Bell, Menu, X, Heart, Video, User, Brain, PenTool, Lightbulb, TestTube, ClipboardList } from "lucide-react";
+import { Home, BookOpen, Settings, LogOut, Bell, Menu, X, Heart, Video, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signOut } = useAuth();
-  const { toast } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/dashboard', label: 'Dashboard', icon: Heart },
-    { path: '/empathy-wall', label: 'Empathy Wall', icon: Brain },
-    { path: '/define-board', label: 'Define Board', icon: PenTool },
-    { path: '/ideation-hub', label: 'Ideation Hub', icon: Lightbulb },
-    { path: '/prototype-lab', label: 'Prototype Lab', icon: TestTube },
-    { path: '/test-feedback', label: 'Test Feedback', icon: ClipboardList },
     { path: '/live-class', label: 'Live Class', icon: Video },
     { path: '/notes', label: 'Notes', icon: BookOpen },
+    { path: '/dashboard', label: 'Pulse Check', icon: Heart },
     { path: '/profile', label: 'Profile', icon: User },
   ];
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Signed out successfully",
-        description: "Thank you for using SapienRoot!",
-      });
-      navigate('/');
-    } catch (error) {
-      console.error('Sign out error:', error);
-      toast({
-        title: "Sign out failed",
-        description: "There was an error signing you out.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getUserInitials = () => {
-    if (!user?.user_metadata?.full_name) return 'U';
-    return user.user_metadata.full_name
-      .split(' ')
-      .map((name: string) => name[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   return (
@@ -86,7 +49,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            {navItems.slice(0, 6).map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               
@@ -102,7 +65,7 @@ const Navbar = () => {
                   onClick={() => navigate(item.path)}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="hidden lg:inline">{item.label}</span>
+                  <span>{item.label}</span>
                 </Button>
               );
             })}
@@ -110,72 +73,54 @@ const Navbar = () => {
 
           {/* Right Side - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && (
-              <>
-                {/* Notifications */}
-                <Button variant="ghost" size="sm" className="relative rounded-2xl">
-                  <Bell className="w-5 h-5 text-nature-brown" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-nature-green text-white text-xs p-0 flex items-center justify-center">
-                    2
-                  </Badge>
-                </Button>
+            {/* Notifications */}
+            <Button variant="ghost" size="sm" className="relative rounded-2xl">
+              <Bell className="w-5 h-5 text-nature-brown" />
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-nature-green text-white text-xs p-0 flex items-center justify-center">
+                2
+              </Badge>
+            </Button>
 
-                {/* User Menu */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-2xl">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.user_metadata?.full_name || 'User'} />
-                        <AvatarFallback className="bg-gradient-to-br from-nature-green to-nature-darkGreen text-white">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 rounded-2xl shadow-xl border-nature-green/20" align="end" forceMount>
-                    <div className="flex flex-col space-y-1 p-4">
-                      <p className="text-sm font-medium leading-none font-serif">
-                        {user?.user_metadata?.full_name || 'User'}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user?.email}
-                      </p>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/profile')} className="rounded-xl mx-2">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="rounded-xl mx-2">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            )}
-            
-            {!user && (
-              <Button
-                onClick={() => navigate('/auth')}
-                className="bg-nature-green hover:bg-nature-darkGreen text-white rounded-2xl"
-              >
-                Sign In
-              </Button>
-            )}
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-2xl">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src="/placeholder.svg" alt="Alex" />
+                    <AvatarFallback className="bg-gradient-to-br from-nature-green to-nature-darkGreen text-white">
+                      AJ
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 rounded-2xl shadow-xl border-nature-green/20" align="end" forceMount>
+                <div className="flex flex-col space-y-1 p-4">
+                  <p className="text-sm font-medium leading-none font-serif">Alex Johnson</p>
+                  <p className="text-xs leading-none text-muted-foreground">alex@sapienroot.edu</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="rounded-xl mx-2">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/')} className="rounded-xl mx-2">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
-            {user && (
-              <Button variant="ghost" size="sm" className="relative rounded-2xl">
-                <Bell className="w-5 h-5 text-nature-brown" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-nature-green text-white text-xs p-0 flex items-center justify-center">
-                  2
-                </Badge>
-              </Button>
-            )}
+            {/* Mobile Notifications */}
+            <Button variant="ghost" size="sm" className="relative rounded-2xl">
+              <Bell className="w-5 h-5 text-nature-brown" />
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-nature-green text-white text-xs p-0 flex items-center justify-center">
+                2
+              </Badge>
+            </Button>
             
             <Button
               variant="ghost"
@@ -221,62 +166,44 @@ const Navbar = () => {
               })}
               
               {/* Mobile User Section */}
-              {user && (
-                <div className="pt-4 border-t border-nature-green/20 space-y-3">
-                  <div className="flex items-center space-x-3 px-3 py-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.user_metadata?.full_name || 'User'} />
-                      <AvatarFallback className="bg-gradient-to-br from-nature-green to-nature-darkGreen text-white text-sm">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium font-serif">
-                        {user?.user_metadata?.full_name || 'User'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{user?.email}</p>
-                    </div>
+              <div className="pt-4 border-t border-nature-green/20 space-y-3">
+                <div className="flex items-center space-x-3 px-3 py-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/placeholder.svg" alt="Alex" />
+                    <AvatarFallback className="bg-gradient-to-br from-nature-green to-nature-darkGreen text-white text-sm">
+                      AJ
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium font-serif">Alex Johnson</p>
+                    <p className="text-xs text-muted-foreground">alex@sapienroot.edu</p>
                   </div>
-                  
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start space-x-3 rounded-2xl text-nature-brown hover:bg-nature-beige/50"
-                    onClick={() => {
-                      navigate('/profile');
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <Settings className="w-5 h-5" />
-                    <span>Settings</span>
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start space-x-3 rounded-2xl text-nature-brown hover:bg-nature-beige/50"
-                    onClick={() => {
-                      handleSignOut();
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span>Log out</span>
-                  </Button>
                 </div>
-              )}
-              
-              {!user && (
-                <div className="pt-4 border-t border-nature-green/20">
-                  <Button
-                    onClick={() => {
-                      navigate('/auth');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full bg-nature-green hover:bg-nature-darkGreen text-white rounded-2xl"
-                  >
-                    Sign In
-                  </Button>
-                </div>
-              )}
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start space-x-3 rounded-2xl text-nature-brown hover:bg-nature-beige/50"
+                  onClick={() => {
+                    navigate('/profile');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <Settings className="w-5 h-5" />
+                  <span>Settings</span>
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start space-x-3 rounded-2xl text-nature-brown hover:bg-nature-beige/50"
+                  onClick={() => {
+                    navigate('/');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Log out</span>
+                </Button>
+              </div>
             </div>
           </div>
         )}
